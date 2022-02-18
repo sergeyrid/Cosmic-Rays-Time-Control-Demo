@@ -10,7 +10,8 @@ public class CameraControl : MonoBehaviour
     public float angularVelocity = 10;
     private Rigidbody m_Rigidbody;
     private Transform m_Transform;
-    private Vector2 m_TurnVector = new Vector2(0, 0);
+    private Vector2 m_TurnVector;
+    private Vector3 m_MovementVector;
 
     private void Start()
     {
@@ -22,14 +23,14 @@ public class CameraControl : MonoBehaviour
     {
         m_Transform.Rotate(Vector3.up, m_TurnVector.x * Time.deltaTime * angularVelocity, Space.World);
         m_Transform.Rotate(Vector3.right, -m_TurnVector.y * Time.deltaTime * angularVelocity, Space.Self);
+        m_Rigidbody.velocity = m_MovementVector.x * m_Transform.right +
+                               m_MovementVector.y * m_Transform.up +
+                               m_MovementVector.z * m_Transform.forward;
     }
 
     public void OnMovement(InputAction.CallbackContext context)
     {
-        var movementInput = context.ReadValue<Vector3>() * velocity;
-        m_Rigidbody.velocity = movementInput.x * m_Transform.right +
-                               movementInput.y * m_Transform.up +
-                               movementInput.z * m_Transform.forward;
+        m_MovementVector = context.ReadValue<Vector3>() * velocity;
     }
 
     public void OnTurn(InputAction.CallbackContext context)
